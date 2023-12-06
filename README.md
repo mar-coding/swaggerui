@@ -17,11 +17,17 @@ import (
 
 //go:embed swagger.json
 var spec []byte
+var port = 8000
 
 func main() {
 	log.SetFlags(0)
-	http.Handle("/swagger/", http.StripPrefix("/swagger", swaggerui.Handler(spec)))
-	log.Println("serving on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	mux := http.NewServeMux()
+	mux.Handle("/swagger/", http.StripPrefix("/swagger", swaggerui.Handler(spec)))
+	log.Printf("Listening on port %d...", port)
+
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 ```
